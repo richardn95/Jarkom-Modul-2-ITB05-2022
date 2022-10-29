@@ -27,10 +27,10 @@ Kelompok ITB05
 * [Kendala](#kendala)
 
 # Soal-1
-WISE akan dijadikan sebagai DNS Master, Berlint akan dijadikan DNS Slave, dan Eden akan digunakan sebagai Web Server. Terdapat 2 Client yaitu SSS, dan Garden. Semua node terhubung pada router Ostania, sehingga dapat mengakses internet 
+WISE akan dijadikan sebagai DNS Master, Berlint akan dijadikan DNS Slave, dan Eden akan digunakan sebagai Web Server. Terdapat 2 Client yaitu SSS, dan Garden. Semua node terhubung pada router Ostania, sehingga dapat mengakses internet <br>
 ![topologi](img/topologi.png) <br>
 ## Penyelesaian Soal 1
-Berikut ini adalah topologi yang kami buat 
+Berikut ini adalah topologi yang kami buat <br>
 ![topologi](img/soal_1.1.png)<br>
 Network konfigurasi pada node Ostania adalah sebagai berikut
 ```
@@ -103,9 +103,9 @@ echo nameserver 10.47.2.2 > /etc/resolv.conf
 echo nameserver 10.47.3.2 >> /etc/resolv.conf
 echo nameserver 192.168.122.1 >> /etc/resolv.conf
 ```
-Setelah semua node di-*restart*, semua node dapat terkoneksi dengan internet, contohnya pada Eden dilakukan `ping www.google.com`
+Setelah semua node di-*restart*, semua node dapat terkoneksi dengan internet, contohnya pada Eden dilakukan `ping www.google.com` <br>
 ![connect_internet](img/soal_1.2.png) <br>
-Koneksi ke internet behasil dilakukan,
+Koneksi ke internet behasil dilakukan.
 
 # Soal-2
 Untuk mempermudah mendapatkan informasi mengenai misi dari Handler, bantulah Loid membuat website utama dengan akses **wise.yyy.com** dengan alias **www.wise.yyy.com** pada folder wise 
@@ -124,22 +124,22 @@ cp etc/bind/jarkom/2.47.10.in-addr.arpa /etc/bind/jarkom/2.47.10.in-addr.arpa
 service bind9 restart
 
 ```
-Isi dari `/etc/bind/jarkom/named.conf.local` adalah sebagai berikut 
+Isi dari `/etc/bind/jarkom/named.conf.local` adalah sebagai berikut (copy dari `etc/bind/jarkom/named.conf.local` pada `loadDNS.bash` pada perintah `cp etc/bind/named.conf.loacal /etc/bind/named.conf.loacal`) 
 ```
 zone "wise.itb05.com" {
     type master;
     notify yes;
     also-notify { 10.47.3.2; }; // IP Berlint
     allow-transfer { 10.47.3.2; }; // IP Berlint
-    file "/etc/bindjarkom/wise.itb05.com";
+    file "/etc/bind/jarkom/wise.itb05.com";
 };
 
 zone "2.47.10.in-addr.arpa"{
     type master;
-    file "/etc/bindjarkom/2.47.10.in-addr.arpa";
+    file "/etc/bind/jarkom/2.47.10.in-addr.arpa";
 }
 ```
-Isi dari `/etc/bind/jarkom/wise.itb05.com` adalah sebagai berikut 
+Isi dari `/etc/bind/jarkom/wise.itb05.com` adalah sebagai berikut (copy dari `/etc/bind/jarkom/wise.itb05.com` pada `loadDNS.bash` pada perintah `cp etc/bind/jarkom/wise.itb05.coml /etc/bind/jarkom/wise.itb05.com`) 
 ```
 ;
 ; BIND data file for local loopback interface
@@ -161,25 +161,121 @@ www.eden    IN      CNAME       eden.wise.itb05.com
 nsl         IN      A           10.47.3.2
 operation   IN      NS          nsl
 ```
-Setelah selesai, *ping* **wise.itb05.com** dan **www.wise.itb05.com** di *SSS*
+Setelah selesai, *ping* **wise.itb05.com** dan **www.wise.itb05.com** di *SSS*<br>
 ![sss](img/soal_2.1.png) <br>
-*ping* **wise.itb05.com** dan **www.wise.itb05.com** di *Garden*
-![garden](img/soal_2.2.png)
+*ping* **wise.itb05.com** dan **www.wise.itb05.com** di *Garden*<br>
+![garden](img/soal_2.2.png)<br>
 # Soal-3
 Setelah itu ia juga ingin membuat subdomain **eden.wise.yyy.com** dengan alias **www.eden.wise.yyy.com** yang diatur DNS-nya di WISE dan mengarah ke Eden
 ## Penyelesaian Soal 3
+Pada `/etc/bind/jarkom/wise.itb05.com` ditambahkan
+```
+eden        IN      A           10.47.3.3
+```
+untuk membuat **subdomain** menggunakan **A** yang mengarah ke **eden (10.47.3.3)**
+```
+www.eden    IN      CNAME       eden.wise.itb05.com
+```
+untuk membuat **alias** menggunakan **CNAME** yang mengarah ke **eden.wise.itb05.com**<br>
+Hasil ping **eden.wise.itb05.com** dan **www.eden.wise.itb05.com** pada *SSS* <br>
+![eden_SSS](img/soal_3.1.png)<br>
+Hasil ping **eden.wise.itb05.com** dan **www.eden.wise.itb05.com** pada *Garden* <br>
+![eden_Garden](img/soal_3.2.png)<br>
 # Soal-4
 Buat juga reverse domain untuk domain utama
 ## Penyelesaian Soal 4
+Reverse domain dibuat pada `/etc/bind/jarkom/named.conf.local` dengan cara sebagai berikut
+```
+zone "2.47.10.in-addr.arpa"{
+    type master;
+    file "/etc/bindjarkom/2.47.10.in-addr.arpa";
+}
+```
+Selanjutnya pada `/etc/bind/jarkom/2.47.10.in-addr.arpa` berisi seperti berikut ini (dibuat dengan perintah `cp etc/bind/jarkom/2.47.10.in-addr.arpa /etc/bind/jarkom/2.47.10.in-addr.arpa`)
+```
+;
+; BIND data file for local loopback interface
+;
+STTL    604800
+@       IN      SOA     wise.itb05.com  root.wise.itb05.com. (
+                                  2      ;Serial
+                             604800      ;Refresh
+                              86400      ;Retry
+                        	2419200      ;Expire
+                             604800 )    ;Negative Cache TTL
+;
+2.47.10.in-addr.arpa    IN      NS          wise.itb05.com.
+2           			IN      A           wise.itb05.com.
+```
+Hasil ketika dijalankan reverse domain pada *SSS* <br>
+![reverse_SSS](img/soal_4.1.png) <br>
+Hasil ketika dijalankan reverse domain pada *Garden* <br>
+![reverse_Garden](img/soal_4.2.png) <br>
 # Soal-5
 Agar dapat tetap dihubungi jika server WISE bermasalah, buatlah juga Berlint sebagai DNS Slave untuk domain utama
 ## Penyelesaian Soal 5
+Pada DNS Master (`/etc/bind/named.conf.loacal`) dimasukkan notify, also-notify, dan allow-transfer pada IP Berlint (DNS Slave, 10.47.3.2)
+```
+zone "wise.itb05.com" {
+    type master;
+    notify yes;
+    also-notify { 10.47.3.2; }; // IP Berlint
+    allow-transfer { 10.47.3.2; }; // IP Berlint
+    file "/etc/bind/jarkom/wise.itb05.com";
+};
+```
+Pembuatan DNS Slave pada Berlint, caranya adalah memasukkan kode berikut ini pada `/etc/bind/named.conf.local` 
+```
+zone "wise.itb05.com" {
+    type slave;
+    masters { 10.47.2.2; }; // IP WISE
+    file "/var/lib/bind/wise.itb05.com";
+};
+```
+Selanjutnya dilakukan percobaan DNS Slave dengan perintah `service bind9 stop`<br>
+![master_stop](img/soal_5.1.png)<br>
+Lakukan ping pada wise.itb05.com, terihat bahwa ketika service bind di-*stop*, di client (SSS) masih bisa di-*ping*
+![slave_ping](img/soal_5.2.png)
 # Soal-6
 Karena banyak informasi dari Handler, buatlah subdomain yang khusus untuk operation yaitu **operation.wise.yyy.com** dengan alias **www.operation.wise.yyy.com** yang didelegasikan dari WISE ke Berlint dengan IP menuju ke Eden dalam folder operation
 ## Penyelesaian Soal 6
+Pada DNS Slave (Berlint), ditambahkan kode berikut ini pada `/etc/bind/conf.local`
+```
+zone "operation.wise.itb05.com"{
+    type master;
+    file "/etc/bind/delegasi/2operation.wise.itb05.com";
+}
+```
+Pada `/etc/binddelegasi/operation.wise.itb05.com`, dimasukkan 
+```
+;
+; BIND data file for local loopback interface
+;
+STTL    604800
+@       IN      SOA     operation.wise.itb05.com  root.operaton.wise.itb05.com. (
+                                  2      ;Serial
+                             604800      ;Refresh
+                              86400      ;Retry
+                        	2419200      ;Expire
+                             604800 )    ;Negative Cache TTL
+;
+@           IN      NS          operation.wise.itb05.com.
+@           IN      A           10.47.3.3
+@           IN      AAAA        ::1
+www         IN      CNAME       operation.wise.itb05.com.
+```
+Hasil jika di-*ping* pada client (SSS)<br>
+![ping_operation](img/soal_6.1.png)<br>
 # Soal-7
 Untuk informasi yang lebih spesifik mengenai Operation Strix, buatlah subdomain melalui Berlint dengan akses **strix.operation.wise.yyy.com** dengan alias **www.strix.operation.wise.yyy.com** yang mengarah ke Eden
 ## Penyelesaian Soal 7
+Pada `/etc/binddelegasi/operation.wise.itb05.com`, ditambahkan dibawah 
+```
+strix       IN      A           10.47.3.3
+www.strix	IN		CNAME		strix.operation.wise.itb05.com.
+```
+Hasil jika di-*ping* pada client (SSS)<br>
+![ping_strix](img/soal_7.1.png)<br>
 # Soal-8
 Setelah melakukan Network konfigurasi server, maka dilakukan Network konfigurasi Webserver. Pertama dengan webserver www.wise.yyy.com. Pertama, Loid membutuhkan webserver dengan DocumentRoot pada /var/www/wise.yyy.com
 ## Penyelesaian Soal 8
@@ -212,3 +308,4 @@ Karena website **www.eden.wise.yyy.com** semakin banyak pengunjung dan banyak mo
 ## Penyelesaian Soal 17
 
 # Kendala
+Tidak ada
