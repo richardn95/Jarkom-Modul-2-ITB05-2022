@@ -337,18 +337,111 @@ Tidak hanya itu, Loid juga ingin menyiapkan error file 404.html pada folder /err
 # Soal-13
 Loid juga meminta Franky untuk dibuatkan Network konfigurasi virtual host. Virtual host ini bertujuan untuk dapat mengakses file asset **www.eden.wise.yyy.com/public/js** menjadi **www.eden.wise.yyy.com/js**
 ## Penyelesaian Soal 13
+
 # Soal-14
 Loid meminta agar **www.strix.operation.wise.yyy.com** hanya bisa diakses dengan port 15000 dan port 15500
+
 ## Penyelesaian Soal 14
+
+**Eden**
+
+Konfigurasi file **/etc/apache2/sites-available/strix.operation.wise.itb05.com.conf** untuk menambah virtual host port 15000 dan 15500
+
+```
+<VirtualHost *:15000>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/strix.operation.wise.itb05.com
+        ServerName strix.operation.wise.itb05.com
+        ServerAlias www.strix.operation.wise.itb05.com
+</VirtualHost>
+<VirtualHost *:15500>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/strix.operation.wise.itb05.com
+        ServerName strix.operation.wise.itb05.com
+        ServerAlias www.strix.operation.wise.itb05.com
+</VirtualHost>
+```
+Konfigurasi file **/etc/apache2/ports.conf** untuk menambah membuka port 15000 dan 15500
+
+```
+Listen 15000
+Listen 15500
+```
+
+**Testing**
+![Testing port 15000 dan 15500](img/soal_14.1.png)
+
 # Soal-15
 dengan autentikasi username Twilight dan password opStrix dan file di /var/www/strix.operation.wise.yyy
+
 ## Penyelesaian Soal 15
+
+Dilakukan pembuatan file otentikasi dengan command
+```
+htpasswd -c -b /etc/apache2/.htpasswd Twilight opStrix
+```
+
+Setelah itu pada **/etc/apache2/sites-available/strix.operation.wise.itb05.com.conf** ditambahkan konfigurasi seperti berikut pada kedua virtual host
+```
+<Directory /var/www/strix.operation.wise.itb05.com>
+        AuthType Basic
+        AuthName "Butuh Otentikasi"
+        AuthUserFile /etc/apache2/.htpasswd
+        Require valid-user
+</Directory>
+```
+
+**Testing**
+![Testing 15](img/soal_14.1.png)
+
 # Soal-16
 dan setiap kali mengakses IP Eden akan dialihkan secara otomatis ke **www.wise.yyy.com**
+
 ## Penyelesaian Soal 16
+
+Pada file **/etc/apache2/sites-available/000-default.conf** ditambahkan konfigurasi berikut agar ketika mengakses IP Eden, akan direct ke http://wise.itb05.com
+
+```
+redirect permanent / http://wise.itb05.com
+```
+
+**Testing**
+```
+lynx 10.47.3.3
+```
+![Testing 16](img/soal_16.png)
 # Soal-17
 Karena website **www.eden.wise.yyy.com** semakin banyak pengunjung dan banyak modifikasi sehingga banyak gambar-gambar yang random, maka Loid ingin mengubah request gambar yang memiliki substring “eden” akan diarahkan menuju eden.png. Bantulah Agent Twilight dan Organisasi WISE menjaga perdamaian!
+
 ## Penyelesaian Soal 17
+
+Pertama, dijalankan terlebih dahulu command berikut untuk mengaktifkan module rewrite
+```
+a2enmod rewrite
+```
+
+Kemudian dibuat file .htaccess pada **/var/www/eden.wise.itb05.com/.htaccess**
+
+```regex
+RewriteEngine On
+RewriteCond %{REQUEST_URI} !^/public/images/eden.png$
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)eden(.*)$ /public/images/eden.png [R=301,L]
+```
+
+Kemudian pada **/etc/apache2/sites-available/eden.wise.itb05.com.conf** ditambahkan konfigurasi berikut
+
+```
+<Directory /var/www/eden.wise.itb05.com>
+        Options +FollowSymLinks -Multiviews
+        AllowOverride All
+</Directory>
+```
+**Testing**
+```
+lynx eden.wise.itb05.com/testedenadfasdf
+```
+![Testing 17](img/soal_17.png)
 
 # Kendala
 Tidak ada
