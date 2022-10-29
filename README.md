@@ -277,11 +277,40 @@ www.strix	IN		CNAME		strix.operation.wise.itb05.com.
 Hasil jika di-*ping* pada client (SSS)<br>
 ![ping_strix](img/soal_7.1.png)<br>
 # Soal-8
-Setelah melakukan Network konfigurasi server, maka dilakukan Network konfigurasi Webserver. Pertama dengan webserver www.wise.yyy.com. Pertama, Loid membutuhkan webserver dengan DocumentRoot pada /var/www/wise.yyy.com
+Setelah melakukan Network konfigurasi server, maka dilakukan Network konfigurasi Webserver. Pertama dengan webserver **www.wise.yyy.com**. Pertama, Loid membutuhkan webserver dengan DocumentRoot pada /var/www/wise.yyy.com
 ## Penyelesaian Soal 8
+Jalankan `loadWS.bash` pada *WISE* dengan perintah `bash loadWS.bash`, berikut ini adalah isi dari `loadWS.bash`
+```
+apt-get install lynx -y
+apt-get install apache2 -y
+service apache2 start
+apt-get install php -y
+apt-get install libapache2-mod-php7.0 -y
+service apache2 restart
+
+
+cp etc/apache2/ports.conf /etc/apache2/ports.conf
+cp etc/apache2/sites-available/wise.itb05.com.conf /etc/apache2/sites-available/wise.itb05.com.conf
+cp var/www/wise.itb05.com /var/www/ -r
+
+cd /etc/apache2/sites-available
+a2ensite wise.itb05.com.conf
+cd /root
+
+service apache2 restart
+```
+Jalankan juga `loadWS.bash` pada *Client* dengan perintah `bash loadWS.bash`, berikut ini adalah isi dari `loadWS.bash`
+```
+apt-get install lynx -y
+```
+Jika dilakukan `lynx wise.itb05.com` akan mendapatkan hasil sebagai berikut<br>
+![WS_8](img/soal_8.1.png)<br>
+![WS_8](img/soal_8.2.png)<br>
 # Soal-9
 Setelah itu, Loid juga membutuhkan agar url **www.wise.yyy.com/index.php/home** dapat menjadi menjadi **www.wise.yyy.com/home**
 ## Penyelesaian Soal 9
+![WS_8](img/soal_9.1.png)<br>
+![WS_8](img/soal_8.2.png)<br>
 # Soal-10
 Setelah itu, pada subdomain **www.eden.wise.yyy.com**, Loid membutuhkan penyimpanan aset yang memiliki DocumentRoot pada /var/www/eden.wise.yyy.com
 ## Penyelesaian Soal 10
