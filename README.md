@@ -276,9 +276,13 @@ www.strix	IN		CNAME		strix.operation.wise.itb05.com.
 ```
 Hasil jika di-*ping* pada client (SSS)<br>
 ![ping_strix](img/soal_7.1.png)<br>
+
 # Soal-8
+
 Setelah melakukan Network konfigurasi server, maka dilakukan Network konfigurasi Webserver. Pertama dengan webserver **www.wise.yyy.com**. Pertama, Loid membutuhkan webserver dengan DocumentRoot pada /var/www/wise.yyy.com
+
 ## Penyelesaian Soal 8
+
 Jalankan `loadWS.bash` pada *WISE* dengan perintah `bash loadWS.bash`, berikut ini adalah isi dari `loadWS.bash`
 ```
 apt-get install lynx -y
@@ -303,40 +307,92 @@ Jalankan juga `loadWS.bash` pada *Client* dengan perintah `bash loadWS.bash`, be
 ```
 apt-get install lynx -y
 ```
-Pada `/etc/apache2/sites-available/wise.itb05.com.conf` ditambahkan ini pada `VirtualHost`
-```
-ServerAdmin webmaster@localhost
-DocumentRoot /var/www/wise.itb05.com
-ServerName wise.itb05.com
-ServerAlias www.wise.itb05.com
+Setelah itu, cek isi dari file `/etc/apache2/sites-available/wise.itb05.com.conf`
 
-ErrorLog ${APACHE_LOG_DIR}/error.log
-ErrorLog ${APACHE_LOG_DIR}/access.log combined
-```
-Jika dilakukan `lynx wise.itb05.com` akan mendapatkan hasil sebagai berikut<br>
-![WS_8](img/soal_8.1.png)<br>
-![WS_8](img/soal_8.2.png)<br>
+![WS_8](img/soal_8_3.png)
+
+Pada baris `DocumentRoot`, pastikan nilainya sudah sesuai dengan yang diminta soal
+
+Jika dilakukan `lynx wise.itb05.com` akan mendapatkan hasil sebagai berikut
+
+![WS_8](img/soal_8.1.png)
+![WS_8](img/soal_8.2.png)
+
 # Soal-9
 Setelah itu, Loid juga membutuhkan agar url **www.wise.yyy.com/index.php/home** dapat menjadi menjadi **www.wise.yyy.com/home**
+
 ## Penyelesaian Soal 9
-Pada `/etc/apache2/sites-available/wise.itb05.com.conf` ditambahkan ini pada `VirtualHost`
-```
-Alias "/home" "/var/www/wise.itb05.com/index.php/home"
-```
-![WS_8](img/soal_9.1.png)<br>
-![WS_8](img/soal_8.2.png)<br>
+
+Pada file `/etc/apache2/sites-available/wise.itb05.com.conf`, tambahkan baris `Alias "/home" "/var/www/wise.itb05.com/index.php/home"`
+
+![WS_8](img/soal_8_3.png)
+
+Jika melakukan ping `www.wise.itb05.com/home`, maka akan menjadi seperti berikut
+
+![WS_8](img/soal_9.1.png)
+![WS_8](img/soal_9.2.png)
+
 # Soal-10
-Setelah itu, pada subdomain **www.eden.wise.yyy.com**, Loid membutuhkan penyimpanan aset yang memiliki DocumentRoot pada /var/www/eden.wise.yyy.com
+
+Setelah itu, pada subdomain **www.eden.wise.yyy.com**, Loid membutuhkan penyimpanan aset yang memiliki DocumentRoot pada `/var/www/eden.wise.yyy.com`
+
 ## Penyelesaian Soal 10
+
+Buka *Eden*, lalu ubah `DocumentRoot` pada `/etc/apache2/sites-available/eden.wise.itb05.com.conf` menjadi `/var/www/eden.wise.itb05.com`
+
+![WS_8](img/soal_10.1.png)
+
+Lalu buat beberapa folder di `/var/www/eden.wise.itb05.com` sebagai penyimpanan aset
+
 # Soal-11
+
 Akan tetapi, pada folder /public, Loid ingin hanya dapat melakukan directory listing saja
+
 ## Penyelesaian Soal 11
+
+Tambah sintaks berikut pada `/etc/apache2/sites-available/eden.wise.itb05.com.conf` di *Eden*
+
+```
+ <Directory /var/www/eden.wise.itb05.com/public>
+     Options +Indexes
+ </Directory>
+```
+
+![WS_8](img/soal_11.1.png)
+
+Lalu coba ping dari *Client*
+
+![WS_8](img/soal_11.2.png)
+![WS_8](img/soal_11.3.png)
+
 # Soal-12
+
 Tidak hanya itu, Loid juga ingin menyiapkan error file 404.html pada folder /error untuk mengganti error kode pada apache
+
 ## Penyelesaian Soal 12
+
+pada `/etc/apache2/sites-available/eden.wise.itb05.com.conf` di *Eden*, tambahkan baris `ErrorDocument 404 /error/404.html`
+
+![WS_8](img/soal_10.1.png)
+
+Jika mencoba akses endpoint url yang tidak tersedia, akan muncul seperti ini
+
+![WS_8](img/soal_12.1.png)
+
 # Soal-13
+
 Loid juga meminta Franky untuk dibuatkan Network konfigurasi virtual host. Virtual host ini bertujuan untuk dapat mengakses file asset **www.eden.wise.yyy.com/public/js** menjadi **www.eden.wise.yyy.com/js**
+
 ## Penyelesaian Soal 13
+
+pada `/etc/apache2/sites-available/eden.wise.itb05.com.conf` di *Eden*, tambahkan baris `Alias "/js" "/var/www/eden.wise.itb05.com/public/js"`
+
+![WS_8](img/soal_10.1.png)
+
+hasil ping
+
+![WS_8](img/soal_13.2.png)
+![WS_8](img/soal_13.1.png)
 
 # Soal-14
 Loid meminta agar **www.strix.operation.wise.yyy.com** hanya bisa diakses dengan port 15000 dan port 15500
