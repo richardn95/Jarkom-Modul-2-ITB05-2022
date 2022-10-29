@@ -303,12 +303,26 @@ Jalankan juga `loadWS.bash` pada *Client* dengan perintah `bash loadWS.bash`, be
 ```
 apt-get install lynx -y
 ```
+Pada `/etc/apache2/sites-available/wise.itb05.com.conf` ditambahkan ini pada `VirtualHost`
+```
+ServerAdmin webmaster@localhost
+DocumentRoot /var/www/wise.itb05.com
+ServerName wise.itb05.com
+ServerAlias www.wise.itb05.com
+
+ErrorLog ${APACHE_LOG_DIR}/error.log
+ErrorLog ${APACHE_LOG_DIR}/access.log combined
+```
 Jika dilakukan `lynx wise.itb05.com` akan mendapatkan hasil sebagai berikut<br>
 ![WS_8](img/soal_8.1.png)<br>
 ![WS_8](img/soal_8.2.png)<br>
 # Soal-9
 Setelah itu, Loid juga membutuhkan agar url **www.wise.yyy.com/index.php/home** dapat menjadi menjadi **www.wise.yyy.com/home**
 ## Penyelesaian Soal 9
+Pada `/etc/apache2/sites-available/wise.itb05.com.conf` ditambahkan ini pada `VirtualHost`
+```
+Alias "/home" "/var/www/wise.itb05.com/index.php/home"
+```
 ![WS_8](img/soal_9.1.png)<br>
 ![WS_8](img/soal_8.2.png)<br>
 # Soal-10
